@@ -84,13 +84,38 @@ public class CopyBuLogsProcess {
 			logger.debug("Last Entry: " + lastLog);
 			
 			/*
-			 * Write the logs to S3 then delete from VDS
+			 * Write accumulate the BuLog entries into StringBuffer(s) divide by \n
 			 */
+			StringBuilder auditLogs = new StringBuilder();
+			StringBuilder matchLogs = new StringBuilder();
+			
+
+			
 			for (BuLogs logEntry : buLogs) {
-				s3Service.putLogEntry(lastLog.getLogtimestamp(), logEntry.getLogtype(), logEntry.getLogtimestamp(), logEntry.getLogcontent());
 				
-				ldapService.deleteLogs(logEntry);
+				switch (logEntry.getLogtype()) {
+				case "audit":
+					auditLogs.append(logEntry.getLogcontent() + "\n");
+					break;
+				case "match":
+					matchLogs.append(logEntry.getLogcontent() + "\n");
+					break;
+
+				default:
+					break;
+				}
 			}
+			
+			s3Service.putLogEntry(lastLog.getLogtimestamp(), "audit", auditLogs.toString());
+			s3Service.putLogEntry(lastLog.getLogtimestamp(), "match", matchLogs.toString());
+			
+			for (BuLogs logEntry : buLogs) {
+				ldapService.deleteLogs(logEntry);
+				
+				
+		
+			}
+			
 
 		}
 	

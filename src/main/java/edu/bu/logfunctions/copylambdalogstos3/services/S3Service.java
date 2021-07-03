@@ -25,8 +25,8 @@ public class S3Service {
 		return repository.getBucketFiles(bucketName, folderName);
 	}
 	
-	public void putLogEntry(String folder, String type, String timestamp, String content) {
-		repository.copyLogEntryToS3(bucketName, folderName, folder, type, timestamp, content);
+	public void putLogEntry(String folder, String type, String content) {
+		repository.copyLogEntryToS3(bucketName, folderName, folder, type, content);
 	}
 
 }

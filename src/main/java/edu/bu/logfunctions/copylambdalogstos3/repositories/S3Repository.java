@@ -41,9 +41,9 @@ public class S3Repository {
 		
 	}
 	
-	public PutObjectResult copyLogEntryToS3(String bucketName, String prefix, String folder, String type, String timestamp, String content) {
+	public PutObjectResult copyLogEntryToS3(String bucketName, String prefix, String folder, String type, String content) {
 		
-		String key = prefix + "/" + folder + "/" + type + "/" + timestamp + ".csv";
+		String key = prefix + "/" + folder + "/" + type + ".csv";
 		
 		return s3.putObject(bucketName, key, content);
 		
