@@ -94,10 +94,10 @@ public class CopyBuLogsProcess {
 			for (BuLogs logEntry : buLogs) {
 				
 				switch (logEntry.getLogtype()) {
-				case "audit":
+				case BuLogs.AUDIT_TYPE:
 					auditLogs.append(logEntry.getLogcontent() + "\n");
 					break;
-				case "match":
+				case BuLogs.MATCH_TYPE:
 					matchLogs.append(logEntry.getLogcontent() + "\n");
 					break;
 
@@ -106,8 +106,8 @@ public class CopyBuLogsProcess {
 				}
 			}
 			
-			s3Service.putLogEntry(lastLog.getLogtimestamp(), "audit", auditLogs.toString());
-			s3Service.putLogEntry(lastLog.getLogtimestamp(), "match", matchLogs.toString());
+			s3Service.putLogEntry(lastLog.getLogtimestamp(), BuLogs.AUDIT_TYPE, auditLogs.toString());
+			s3Service.putLogEntry(lastLog.getLogtimestamp(), BuLogs.MATCH_TYPE, matchLogs.toString());
 			
 			for (BuLogs logEntry : buLogs) {
 				ldapService.deleteLogs(logEntry);

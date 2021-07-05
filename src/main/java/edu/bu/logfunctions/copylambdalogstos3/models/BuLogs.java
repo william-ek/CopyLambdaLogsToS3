@@ -11,6 +11,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Entry(objectClasses = {"bulogs", "top"})
 public class BuLogs implements Comparable<BuLogs> {
 	
+	@JsonIgnore
+	public static final String AUDIT_TYPE = "audit";
+	@JsonIgnore
+	public static final String MATCH_TYPE = "match";
+	
 	@Id
 	@JsonIgnore
 	private Name dn;
