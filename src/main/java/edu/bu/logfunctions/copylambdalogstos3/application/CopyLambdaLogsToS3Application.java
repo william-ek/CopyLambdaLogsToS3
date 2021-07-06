@@ -5,11 +5,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.support.LdapContextSource;
+import org.springframework.web.client.RestTemplate;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
@@ -24,7 +27,7 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 @SpringBootApplication
 public class CopyLambdaLogsToS3Application {
 	
-	private final Logger logger = LoggerFactory.getLogger(CopyLambdaLogsToS3Application.class);
+	private static final Logger logger = LoggerFactory.getLogger(CopyLambdaLogsToS3Application.class);
 	
 	@Value("${LDAP_BIND_URL}")
 	String ldapUrl;
@@ -43,12 +46,28 @@ public class CopyLambdaLogsToS3Application {
 
 	public static void main(String[] args) {
 		
-		ApplicationContext applicationContext = SpringApplication.run(CopyLambdaLogsToS3Application.class, args);
+		ConfigurableApplicationContext applicationContext = SpringApplication.run(CopyLambdaLogsToS3Application.class, args);
 		
 		CopyBuLogsProcess process = applicationContext.getBean(CopyBuLogsProcess.class);
-		process.doProcess();
+		
+		
+		try {
+			process.doProcess();
+		} catch (Exception e) {
+			logger.error("Task ended with an error.");
+			e.printStackTrace();
+		}
+		
+		logger.info("Task Ending");
+		
+		applicationContext.close();
 		
 	}
+	
+	    @Bean
+		public RestTemplate restTemplate(RestTemplateBuilder builder) {
+			return builder.build();
+		}
 	
 	   @Bean
 	    public LdapContextSource contextSource() throws Exception {

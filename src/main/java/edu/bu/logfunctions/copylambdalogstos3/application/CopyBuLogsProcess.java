@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import edu.bu.logfunctions.copylambdalogstos3.models.BuLogs;
 import edu.bu.logfunctions.copylambdalogstos3.services.LdapService;
+import edu.bu.logfunctions.copylambdalogstos3.services.RestService;
 import edu.bu.logfunctions.copylambdalogstos3.services.S3Service;
 
 @Component
@@ -23,8 +24,21 @@ public class CopyBuLogsProcess {
 	@Autowired
 	S3Service s3Service;
 	
+	@Autowired
+	RestService restService;
+	
 	public void doProcess() {
 		logger.debug("doProcess");
+		
+		/*
+		 * Let's check if we are the leader since we only want to do this on one node
+		 */
+		if (!restService.isVDSLeader()) {
+			logger.info("I am not the leader, ending task . . .");
+			return;
+		}
+		
+		logger.debug("I am the leader . . .");
 		
 		/*
 		 * Get a list of all the entries for this bucket/folder
